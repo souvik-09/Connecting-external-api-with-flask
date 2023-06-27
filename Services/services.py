@@ -35,11 +35,21 @@ def save(p_id, prod_id):
 
 
 def list_of_items(name):
+    # Retrieve the carts associated with the given name
     carts = get_cart_by_name(name)
-    response = {name: []}
+    response = {}
 
+    products = []  # Empty list to store product information
+
+    # Iterate over the carts and remove the 'products' key from each cart dictionary
     for cart in carts:
         cart_dict = cart.to_dict()
-        response[name].append(cart_dict)
+        products.extend(cart_dict.pop('products', []))
 
-    return jsonify(response)
+    # Get the email from the first cart (assuming it remains the same for all carts)
+    response['email'] = carts[0].email if carts else ''
+    response['name'] = name  # Set the name
+
+    response['products'] = products  # Set the list of products
+
+    return response
